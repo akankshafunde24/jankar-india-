@@ -16,3 +16,5 @@ This repository contains the zero-cost GitHub Pages build of Jankar India.
 The FastAPI source build was validated against 20 API scenarios before publication, including authentication, source validation, Central/State/Local routing, RTI approval gates, response analysis and appeal assistance.
 
 The public Pages build implements the same demo flow entirely in-browser so it requires no paid backend hosting.
+
+Deployment: GitHub Pages via the workflow in `.github/workflows/pages.yml`.
