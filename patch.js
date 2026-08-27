@@ -1,5 +1,5 @@
 // Approved targeted changes only: branding consistency, RTI BPL/attachment flow, First Appeal.
-const JANKAR_REFERENCE_LOGO="assets/jankar-logo.svg";
+const JANKAR_REFERENCE_LOGO="assets/jankar-logo.png";
 
 const _baseManual=manual;
 manual=function(){if(!s.authed){s.afterLogin='manual';return loginPage();}return _baseManual();};
