@@ -1,0 +1,37 @@
+name: Finalize approved PNG logo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/logo-switch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Switch only logo references and clean temporary files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f assets/jankar-logo.png
+          sed -i 's#assets/jankar-logo\.svg#assets/jankar-logo.png#g' patch.js logo.js
+          rm -f assets/jankar-logo.svg
+          rm -rf .logo-build
+          rm -f .github/workflows/logo-switch.yml
+          git config user.name "Jankar India Bot"
+          git config user.email "actions@github.com"
+          git add patch.js logo.js assets/jankar-logo.png assets/jankar-logo.svg .logo-build .github/workflows/logo-switch.yml || true
+          if git diff --cached --quiet; then
+            echo 'No logo changes required.'
+            exit 0
+          fi
+          git commit -m 'Use approved PNG logo throughout project'
+          git push origin HEAD:main
