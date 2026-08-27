@@ -50,6 +50,64 @@ STATE_NAMES = [
     "Ladakh", "Lakshadweep", "Puducherry",
 ]
 
+DOPT_STATE_DIRECTORY = "https://rti.dopt.gov.in/rtistatelink.html"
+RTI_PORTALS: dict[str, tuple[str, bool]] = {
+    "Andhra Pradesh": (DOPT_STATE_DIRECTORY, False),
+    "Arunachal Pradesh": ("https://rti.arunachal.gov.in/", True),
+    "Assam": (DOPT_STATE_DIRECTORY, False),
+    "Bihar": ("https://jaankari.bihar.gov.in/", True),
+    "Chhattisgarh": ("https://rtionline.cg.gov.in/", True),
+    "Goa": ("https://rtionline.goa.gov.in/", True),
+    "Gujarat": ("https://onlinerti.gujarat.gov.in/", True),
+    "Haryana": ("https://rtiharyana.gov.in/", True),
+    "Himachal Pradesh": ("https://onlinerti.hp.gov.in/", True),
+    "Jharkhand": (DOPT_STATE_DIRECTORY, False),
+    "Karnataka": ("https://rtionline.karnataka.gov.in/", True),
+    "Kerala": ("https://rtiportal.kerala.gov.in/", True),
+    "Madhya Pradesh": ("https://services.mp.gov.in/eservice/", True),
+    "Maharashtra": ("https://rtionline.maharashtra.gov.in/", True),
+    "Manipur": (DOPT_STATE_DIRECTORY, False),
+    "Meghalaya": ("https://megrti.gov.in/", True),
+    "Mizoram": ("https://rti.mizoram.gov.in/login", True),
+    "Nagaland": (DOPT_STATE_DIRECTORY, False),
+    "Odisha": ("https://rtiodisha.gov.in/", True),
+    "Punjab": ("https://rti.punjab.gov.in/", True),
+    "Rajasthan": ("https://rti.rajasthan.gov.in/", True),
+    "Sikkim": (DOPT_STATE_DIRECTORY, False),
+    "Tamil Nadu": ("https://rtionline.tn.gov.in/", True),
+    "Telangana": ("https://rti.telangana.gov.in/", True),
+    "Tripura": ("https://rtionline.tripura.gov.in/", True),
+    "Uttar Pradesh": ("https://rtionline.up.gov.in/", True),
+    "Uttarakhand": ("https://rtionline.uk.gov.in/", True),
+    "West Bengal": (DOPT_STATE_DIRECTORY, False),
+    "Andaman and Nicobar Islands": ("https://rtionline.gov.in/", True),
+    "Chandigarh": ("https://rtionline.gov.in/", True),
+    "Dadra and Nagar Haveli and Daman and Diu": (DOPT_STATE_DIRECTORY, False),
+    "Delhi": ("http://rtionline.delhi.gov.in/", True),
+    "Jammu and Kashmir": ("https://rtionline.jk.gov.in/", True),
+    "Ladakh": ("https://rtionline.ladakh.gov.in/index.php", True),
+    "Lakshadweep": (DOPT_STATE_DIRECTORY, False),
+    "Puducherry": ("https://rtionline.gov.in/", True),
+}
+
+LOCATION_ALIASES = {
+    "ap": "Andhra Pradesh", "mp": "Madhya Pradesh", "tn": "Tamil Nadu", "up": "Uttar Pradesh", "j&k": "Jammu and Kashmir",
+    "vijayawada": "Andhra Pradesh", "visakhapatnam": "Andhra Pradesh", "tirupati": "Andhra Pradesh", "amaravati": "Andhra Pradesh",
+    "itanagar": "Arunachal Pradesh", "guwahati": "Assam", "dispur": "Assam", "patna": "Bihar", "gaya": "Bihar",
+    "raipur": "Chhattisgarh", "bilaspur": "Chhattisgarh", "panaji": "Goa", "ahmedabad": "Gujarat", "surat": "Gujarat", "vadodara": "Gujarat", "gandhinagar": "Gujarat",
+    "gurugram": "Haryana", "gurgaon": "Haryana", "faridabad": "Haryana", "shimla": "Himachal Pradesh", "manali": "Himachal Pradesh", "dharamshala": "Himachal Pradesh",
+    "ranchi": "Jharkhand", "jamshedpur": "Jharkhand", "bangalore": "Karnataka", "bengaluru": "Karnataka", "mysuru": "Karnataka", "mysore": "Karnataka", "mangaluru": "Karnataka",
+    "kochi": "Kerala", "thiruvananthapuram": "Kerala", "trivandrum": "Kerala", "kozhikode": "Kerala", "bhopal": "Madhya Pradesh", "indore": "Madhya Pradesh", "jabalpur": "Madhya Pradesh",
+    "mumbai": "Maharashtra", "pune": "Maharashtra", "nagpur": "Maharashtra", "nashik": "Maharashtra", "thane": "Maharashtra", "aurangabad": "Maharashtra",
+    "imphal": "Manipur", "shillong": "Meghalaya", "aizawl": "Mizoram", "kohima": "Nagaland", "dimapur": "Nagaland", "bhubaneswar": "Odisha", "cuttack": "Odisha",
+    "amritsar": "Punjab", "ludhiana": "Punjab", "jalandhar": "Punjab", "jaipur": "Rajasthan", "jodhpur": "Rajasthan", "udaipur": "Rajasthan", "kota": "Rajasthan", "gangtok": "Sikkim",
+    "chennai": "Tamil Nadu", "coimbatore": "Tamil Nadu", "madurai": "Tamil Nadu", "hyderabad": "Telangana", "warangal": "Telangana", "agartala": "Tripura",
+    "lucknow": "Uttar Pradesh", "noida": "Uttar Pradesh", "agra": "Uttar Pradesh", "varanasi": "Uttar Pradesh", "kanpur": "Uttar Pradesh", "prayagraj": "Uttar Pradesh",
+    "dehradun": "Uttarakhand", "haridwar": "Uttarakhand", "kolkata": "West Bengal", "howrah": "West Bengal", "darjeeling": "West Bengal", "port blair": "Andaman and Nicobar Islands",
+    "daman": "Dadra and Nagar Haveli and Daman and Diu", "silvassa": "Dadra and Nagar Haveli and Daman and Diu", "new delhi": "Delhi", "ncr": "Delhi",
+    "srinagar": "Jammu and Kashmir", "jammu": "Jammu and Kashmir", "leh": "Ladakh", "kavaratti": "Lakshadweep", "pondicherry": "Puducherry",
+}
+
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=5, max_length=1200)
@@ -140,6 +198,8 @@ def extract_pdf_text(content: bytes) -> str:
 def fetch_source_text(url: str) -> str:
     r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=REQUEST_TIMEOUT)
     r.raise_for_status()
+    if not is_verified_government_url(r.url):
+        raise ValueError("Government source redirected to a non-government domain")
     ctype = (r.headers.get("content-type") or "").lower()
     if "pdf" in ctype or url.lower().split("?")[0].endswith(".pdf"):
         return extract_pdf_text(r.content)
@@ -150,13 +210,48 @@ def fetch_source_text(url: str) -> str:
 
 
 def infer_subject_location(question: str, explicit: str | None) -> str | None:
-    if explicit and explicit.strip():
-        return explicit.strip()
     q = question.lower()
+    for city in sorted(LOCATION_ALIASES, key=len, reverse=True):
+        if re.search(rf"(?<![a-z]){re.escape(city)}(?![a-z])", q):
+            return f"{city.title()}, {LOCATION_ALIASES[city]}"
     for state in sorted(STATE_NAMES, key=len, reverse=True):
         if state.lower() in q:
             return state
+    if explicit and explicit.strip():
+        explicit_text = explicit.strip()
+        explicit_lower = explicit_text.lower()
+        for city in sorted(LOCATION_ALIASES, key=len, reverse=True):
+            if re.search(rf"(?<![a-z]){re.escape(city)}(?![a-z])", explicit_lower):
+                return f"{city.title()}, {LOCATION_ALIASES[city]}"
+        for state in sorted(STATE_NAMES, key=len, reverse=True):
+            if state.lower() in explicit_lower:
+                return state
+        return explicit_text
     return None
+
+
+def state_from_location(location: str | None) -> str | None:
+    if not location:
+        return None
+    location_lower = location.lower()
+    for state in sorted(STATE_NAMES, key=len, reverse=True):
+        if state.lower() in location_lower:
+            return state
+    return None
+
+
+def rti_portal_for(location: str | None, jurisdiction: str) -> tuple[str | None, str | None]:
+    if jurisdiction == "CENTRAL":
+        return "https://rtionline.gov.in/", "Central RTI Online"
+    if jurisdiction != "STATE" or not location:
+        return None, None
+    state = state_from_location(location) or location
+    portal = RTI_PORTALS.get(state)
+    if not portal:
+        return DOPT_STATE_DIRECTORY, f"Official RTI portal directory — {state}"
+    url, online = portal
+    label = f"{state} RTI Online" if online else f"Official RTI portal directory — {state}"
+    return url, label
 
 
 def infer_route(question: str, location: str | None, results: list[dict[str, str]]) -> tuple[str, str, str, str]:
@@ -242,6 +337,7 @@ def ask_jankar(req: AskRequest) -> AskResponse:
 
     if not results:
         jurisdiction, authority, reason, confidence = infer_route(req.question, location, [])
+        portal_url, portal_label = rti_portal_for(location, jurisdiction)
         return AskResponse(
             found=False,
             answer="Verified government information could not be found for this question in the live government-source search.",
@@ -253,8 +349,8 @@ def ask_jankar(req: AskRequest) -> AskResponse:
             confidence=confidence,
             sources=[],
             structured_data=None,
-            rti_portal_url="https://rtionline.gov.in/" if jurisdiction == "CENTRAL" else None,
-            rti_portal_label="Central RTI Online" if jurisdiction == "CENTRAL" else None,
+            rti_portal_url=portal_url,
+            rti_portal_label=portal_label,
         )
 
     contexts: list[str] = []
@@ -289,6 +385,7 @@ def ask_jankar(req: AskRequest) -> AskResponse:
         answer, points = deterministic_answer(req.question, results, contexts)
 
     jurisdiction, authority, reason, confidence = infer_route(req.question, location, results)
+    portal_url, portal_label = rti_portal_for(location, jurisdiction)
     return AskResponse(
         found=bool(verified_sources),
         answer=answer,
@@ -300,6 +397,6 @@ def ask_jankar(req: AskRequest) -> AskResponse:
         confidence=confidence,
         sources=verified_sources,
         structured_data=None,
-        rti_portal_url="https://rtionline.gov.in/" if jurisdiction == "CENTRAL" else None,
-        rti_portal_label="Central RTI Online" if jurisdiction == "CENTRAL" else None,
+        rti_portal_url=portal_url,
+        rti_portal_label=portal_label,
     )
